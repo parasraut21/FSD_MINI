@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom'
 const App = () => {
   return (
     <div>
-      <h1>Hello React on Repl.it!</h1>
+      <h1>FSD MINI</h1>
     </div>
   );
 }

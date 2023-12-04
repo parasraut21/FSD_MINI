@@ -18,6 +18,9 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(cors());
 // app.use(cors());
+
+
+// dev
 const DB_URL = 'mongodb://0.0.0.0/chess';
 
 mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -27,6 +30,8 @@ const User = require('./User');
 conn.once('open', () => {
     console.log("***********Mongo DB connected**********");
 });
+
+
 app.post('/join', async (req, res) => {
   const { username, gameId, status } = req.body;
 
@@ -34,14 +39,14 @@ app.post('/join', async (req, res) => {
     let user = await User.findOne({ username });
 
     if (user) {
-      // If the user already exists, update their status to 'active'
+
       user = await User.findOneAndUpdate(
         { username },
         { gameId, status: 'Active' },
         { new: true }
       );
     } else {
-      // If the user does not exist, create a new user
+
       user = await User.create({ username, gameId, status });
     }
 
@@ -76,7 +81,7 @@ app.post('/leave', async (req, res) => {
 
 
 
-
+// paras
 let games = []
 
 let waitlistGameId;
@@ -133,7 +138,7 @@ io.on('connection', socket => {
     game.active[pIndex] = false
     games = games.filter(g => g.active.find(a => !!a))
     if (currentGameId === waitlistGameId) {
-      waitlistGameId = null // make sure someone joining the waitlist doesn't get paired with someone who has already left
+      waitlistGameId = null 
     }
     socket.leaveAll()
     socket.broadcast.to(currentGameId).emit('player left')
@@ -181,12 +186,7 @@ io.on('connection', socket => {
     io.in(currentGameId).emit('time-left', game.timer.time, Date.now())
   })
 
-  socket.on('message', (data) => {
-    console.log('socket message')
-    socket.broadcast.to(currentGameId).emit('message', data)
-  })
-
-  socket.on('rematch', gameId => {
+    socket.on('rematch', gameId => {
     console.log('socket rematch')
     let gameIndex = games.findIndex(g => g.id === currentGameId)
     if (gameIndex === -1) return
@@ -201,7 +201,7 @@ io.on('connection', socket => {
     }
   })
 
-  socket.on('leave', () => {
+    socket.on('leave', () => {
     console.log('socket leave')
     leave()
   })
@@ -213,6 +213,18 @@ io.on('connection', socket => {
     leave()
     delete dev_users[playerId]
   })
+
+
+
+  // aryan
+  socket.on('message', (data) => {
+    console.log('socket message')
+    socket.broadcast.to(currentGameId).emit('message', data)
+  })
+
+
+
+
 
 })
 setInterval(() => {
